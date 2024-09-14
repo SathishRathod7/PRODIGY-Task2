@@ -1,0 +1,65 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+df = pd.read_csv('/content/titanic dataset.zip')
+df.head()
+print("Missing values before cleaning:\n", df.isnull().sum())
+df['Age'].fillna(df['Age'].median(), inplace=True)
+df['Fare'].fillna(df['Fare'].median(), inplace=True)
+df.drop(columns=['Cabin'], inplace=True)
+df['Sex'] = df['Sex'].map({'male': 0, 'female': 1})
+print("Missing values after cleaning:\n", df.isnull().sum())
+df.describe()
+
+# Histogram for Age distribution
+plt.figure(figsize=(10, 6))
+sns.histplot(df['Age'], bins=30, kde=True, color='skyblue')
+plt.title('Distribution of Age')
+plt.xlabel('Age')
+plt.ylabel('Frequency')
+plt.show()
+
+# Histogram for Fare distribution
+plt.figure(figsize=(10, 6))
+sns.histplot(df['Fare'], bins=30, kde=True, color='green')
+plt.title('Distribution of Fare')
+plt.xlabel('Fare')
+plt.ylabel('Frequency')
+plt.show()
+
+# Bar plot for survival rate by gender
+plt.figure(figsize=(8, 6))
+sns.barplot(x='Sex', y='Survived', data=df)
+plt.title('Survival Rate by Gender')
+plt.xlabel('Gender (0: Male, 1: Female)')
+plt.ylabel('Survival Rate')
+plt.show()
+
+# Bar plot for survival rate by passenger class
+plt.figure(figsize=(8, 6))
+sns.barplot(x='Pclass', y='Survived', data=df, palette='viridis')
+plt.title('Survival Rate by Passenger Class')
+plt.xlabel('Passenger Class')
+plt.ylabel('Survival Rate')
+plt.show()
+
+# Plotting survival rate by age
+plt.figure(figsize=(10, 6))
+sns.kdeplot(df[df['Survived'] == 0]['Age'], label='Did Not Survive', shade=True)
+sns.kdeplot(df[df['Survived'] == 1]['Age'], label='Survived', shade=True)
+plt.title('Survival Rate by Age')
+plt.xlabel('Age')
+plt.ylabel('Density')
+plt.legend()
+plt.show()
+
+# Select only the numeric columns for correlation analysis
+numeric_df = df.select_dtypes(include=['float64', 'int64'])
+
+# Plotting the correlation matrix
+plt.figure(figsize=(10, 8))
+sns.heatmap(numeric_df.corr(), annot=True, cmap='coolwarm', fmt='.2f')
+plt.title('Correlation Matrix')
+plt.show()
+
